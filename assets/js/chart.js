@@ -24,35 +24,39 @@ function buildSkillsChart() {
   const detailName = document.getElementById('skill-name');
   const detailCategory = document.getElementById('skill-category');
   const detailDesc = document.getElementById('skill-desc');
-  const chartWrap = document.getElementById('chart-wrap');
+  const chartWrap = document.getElementById('chart-visual');
   const tooltip = document.getElementById('skill-tooltip');
 
   const size = 1120; // wide enough that even the longest label ("Statistical Modeling") clears the edge
   const cx = size / 2;
   const cy = size / 2;
-  // Wider than the original 40: the rendered chart is deliberately small
-  // (so it fits a normal viewport height alongside the hero text), and a
-  // thin petal at that render size is hard to hit precisely — its rotated
-  // shape is so narrow that even its own bounding-box center can fall
-  // outside the actual geometry. Width is independent of petal length, so
-  // this doesn't change the chart's overall diameter, just how comfortable
-  // each petal is to hover/tap.
-  //
-  // 48, not wider: a sweep > 360deg doesn't produce one clean seam gap —
-  // because the wrapped petal (index 11) lands at a normalized angle less
-  // than index 1's, it's sandwiched between two *different* early petals,
-  // producing two tight gaps (~17deg each here) rather than a single large
-  // one. Both of those gaps involve the chart's shortest petal (length 225),
-  // which sets the binding radius for collision. 48 is the widest petal
-  // that still clears both tight gaps with margin at that radius; wider
-  // reintroduces the hover-interception bug this was built to fix.
-  const petalWidth = 48;
   const slotPad = 6;       // slot is wider than the petal on each side
   const slotTipExtend = 8; // slot reaches a little past the petal's tip
   const ringWidth = 48;    // shared concentric ring thickness (the checker rhythm)
   const startAngle = -15;
-  const totalSweep = 377;  // > 360 so the spiral coils past its own start
-  const step = totalSweep / (SKILLS.length - 1);
+  // > 360deg so the spiral coils past its own start. The overshoot is
+  // derived (not a flat constant) so it always comes out to ~half of one
+  // step: that's what makes the wrap-around seam split into two roughly
+  // even gaps instead of one lopsided one, whatever SKILLS.length is (see
+  // petalWidth just below for why that matters).
+  const n = SKILLS.length;
+  const totalSweep = 360 * (2 * (n - 1)) / (2 * (n - 1) - 1);
+  const step = totalSweep / (n - 1);
+  // Scaled to the angular step, at the same ratio as the original 12-skill,
+  // 34.27deg-step layout: wider than the old flat 40 (the rendered chart is
+  // deliberately small, so a thin petal at that size is hard to hit
+  // precisely — its rotated shape is so narrow that even its own
+  // bounding-box center can fall outside the actual geometry), but capped
+  // at that ratio because a sweep > 360deg doesn't produce one clean seam
+  // gap: the wrapped last petal lands at a normalized angle less than the
+  // second petal's, so it's sandwiched between two *different* early
+  // petals, producing two tight gaps rather than a single large one. Both
+  // of those gaps involve the chart's shortest petal, which sets the
+  // binding radius for collision. This ratio is the widest that still
+  // clears both tight gaps with margin at that radius, whatever
+  // SKILLS.length is; wider reintroduces the hover-interception bug this
+  // was built to fix in the first place.
+  const petalWidth = step * (48 / (377 / 11));
   const labelGap = 18;
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const spinDur = '70s'; // slow, ambient: ~1 full turn a minute and change

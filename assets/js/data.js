@@ -16,7 +16,7 @@ const TIER_SPLITS = [0.42, 0.72, 1.0];
    dots: true marks a tip treated with the dotted-texture cap, as an accent, not a data signal. */
 const SKILLS = [
   { name: 'Python', category: 'languages', length: 350, dots: false,
-    description: 'My default tool for everything from data-generation scripts to statistical modeling. I used it across every project below, from the Airbnb EDA to the churn forecasting model.' },
+    description: 'My default tool for everything from data-generation scripts to statistical modeling — the common thread running through nearly every project below, from the Cooling Deserts thesis to the churn forecasting model.' },
   { name: 'SQL', category: 'languages', length: 330, dots: true,
     description: 'CTEs, window functions (LAG, RANK, NTILE), and layered schema design. This is the backbone of the PE scorecard, the churn analysis, and the ETL pipeline.' },
   { name: 'JavaScript', category: 'languages', length: 240, dots: false,
@@ -27,6 +27,8 @@ const SKILLS = [
     description: 'Used to site new cooling infrastructure across uncovered NYC census tracts in the Cooling Deserts thesis.' },
   { name: 'A/B Testing', category: 'modeling', length: 230, dots: false,
     description: 'Designed and read a two-proportion z-test for an onboarding experiment, finding a statistically significant 2.9-point retention lift.' },
+  { name: 'Machine Learning', category: 'modeling', length: 300, dots: false,
+    description: 'Building and evaluating predictive models, not just reporting results: train/test splits, cross-validation, and metrics that match the decision at hand — ROC AUC for the churn classifier, inertia and cluster stability for the Cooling Deserts k-means segmentation.' },
   { name: 'Geospatial Analysis', category: 'applied', length: 295, dots: false,
     description: 'Matching coordinates to county and census-tract boundaries. I used this to correctly place data centers and cooling sites, fixing 24 mis-mapped records in Grid Signal.' },
   { name: 'Cohort & Retention', category: 'applied', length: 265, dots: true,
@@ -38,7 +40,9 @@ const SKILLS = [
   { name: 'Financial Modeling', category: 'engineering', length: 250, dots: true,
     description: 'CAGR, EBITDA margin, leverage, and EV/EBITDA. This is the composite scoring logic behind the PE acquisition scorecard.' },
   { name: 'Data Visualization', category: 'engineering', length: 225, dots: false,
-    description: 'Turning SQL output and model results into charts people actually read. It is the last mile of every project here.' },
+    description: 'Turning SQL output and model results into charts people actually read — static charts in most projects here, and a full interactive Tableau dashboard tracing interstate shelter-dog transport.' },
+  { name: 'Automation', category: 'engineering', length: 235, dots: false,
+    description: 'Automated checks and repeatable runs instead of one-off scripts — the data-quality validations that fire on every run of the Ecommerce ETL pipeline, so a bad batch gets flagged instead of silently loaded.' },
 ];
 
 const PROJECTS = [
@@ -80,10 +84,10 @@ const PROJECTS = [
     tags: ['PostgreSQL', 'SQL', 'ETL', 'Data Quality'],
   },
   {
-    title: 'Exploratory Data Analysis: Airbnb',
-    repoUrl: 'https://github.com/tashraf-745/Exploratory-Data-Analysis',
-    description: 'A from-scratch EDA workflow on Airbnb listings, moving from basic distributions and missingness to multivariate relationships.',
-    stat: { value: 'EDA', label: 'end to end' },
-    tags: ['Python', 'pandas', 'Jupyter'],
+    title: 'The Journey Home: Shelter Dog Transport',
+    liveUrl: 'https://public.tableau.com/app/profile/tahreem.ashraf/viz/DogTransport/FinalDraft',
+    description: 'A Tableau dashboard built on the PetFinder API tracing interstate shelter-dog transport: origin–destination routes, which states and countries send and receive the most dogs, and the breed, age, and size of the dogs making the trip.',
+    stat: { value: '8.9%', label: 'transported across states' },
+    tags: ['Tableau', 'Geospatial', 'Data Visualization', 'API'],
   },
 ];

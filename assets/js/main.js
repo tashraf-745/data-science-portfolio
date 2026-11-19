@@ -16,7 +16,7 @@ function renderProjects() {
         ${p.tags.map((t) => `<span class="chip">${t}</span>`).join('')}
       </div>
       <div class="project-card__links">
-        <a href="${p.repoUrl}" target="_blank" rel="noopener">Code →</a>
+        ${p.repoUrl ? `<a href="${p.repoUrl}" target="_blank" rel="noopener">Code →</a>` : ''}
         ${p.liveUrl ? `<a href="${p.liveUrl}" target="_blank" rel="noopener">Live demo →</a>` : ''}
       </div>
     </article>

@@ -39,7 +39,6 @@
       </div>
 
       <div class="chart-wrap" id="chart-wrap">
-        <svg id="ambient-bg-svg" class="ambient-bg" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
         <div id="skill-detail" class="skill-detail" aria-live="polite" hidden>
           <span id="skill-category" class="skill-detail__category"></span>
           <h3 id="skill-name" class="skill-detail__name"></h3>
@@ -49,8 +48,11 @@
           <p class="skill-detail__default">Hover or tap a petal to see how I&rsquo;ve actually used it.</p>
           <p class="skill-detail__note">Band depth is illustrative: first used, then regular use, then core toolkit. It is not a measured score.</p>
         </div>
-        <svg id="skills-chart" class="chart-svg" role="img" aria-label="A radial chart of skills, grouped by category. Hover or tap a petal for details."></svg>
-        <div id="skill-tooltip" class="skill-tooltip" role="presentation" hidden></div>
+        <div class="chart-visual" id="chart-visual">
+          <svg id="ambient-bg-svg" class="ambient-bg" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
+          <svg id="skills-chart" class="chart-svg" role="img" aria-label="A radial chart of skills, grouped by category. Hover or tap a petal for details."></svg>
+          <div id="skill-tooltip" class="skill-tooltip" role="presentation" hidden></div>
+        </div>
       </div>
     </section>
 

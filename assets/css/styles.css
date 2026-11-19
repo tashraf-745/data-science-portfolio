@@ -67,7 +67,11 @@ img, svg { max-width: 100%; display: block; }
    It scrolls with the page rather than staying fixed — a deliberate
    trade-off for guaranteed alignment with the chart. Never intercepts
    clicks, and never affects text contrast since every opaque surface on
-   the page (cards, panels, buttons) sets its own background explicitly. */
+   the page (cards, panels, buttons) sets its own background explicitly.
+   Positioned against .chart-visual (which wraps only the chart itself,
+   sized to match it exactly), not .chart-wrap — .chart-wrap also contains
+   the skill-detail panel stacked above the chart, so its own center drifts
+   off the chart's hub whenever that panel's height changes. */
 .ambient-bg {
   position: absolute;
   top: 50%;
@@ -75,6 +79,13 @@ img, svg { max-width: 100%; display: block; }
   transform: translate(-50%, -50%);
   width: min(1400px, 140vw);
   height: min(1400px, 140vw);
+  /* Overrides the generic `img, svg { max-width: 100% }` responsive-image
+     rule below: that rule would otherwise clamp this deliberately oversized
+     burst down to its positioned ancestor's width (.chart-visual, which is
+     only as wide as the chart itself), squashing it into a tall narrow
+     strip instead of the wide square it's meant to be. */
+  max-width: none;
+  max-height: none;
   opacity: 0.14;
   pointer-events: none;
   z-index: -1;
@@ -231,12 +242,16 @@ img, svg { max-width: 100%; display: block; }
 
 /* ---------- skills chart ---------- */
 .chart-wrap {
-  position: relative;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 20px;
+}
+.chart-visual {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
 }
 .skill-tooltip {
   position: absolute;
