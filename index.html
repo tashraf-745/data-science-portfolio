@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tahreem Ashraf — Data Scientist &amp; Analyst</title>
+  <meta name="description" content="Portfolio of Tahreem Ashraf — data scientist and analyst working across policy, product, and financial analytics.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+  <header class="container nav">
+    <a href="#" class="nav__name">Tahreem Ashraf</a>
+    <nav class="nav__links">
+      <a href="#work">Work</a>
+      <a href="#about">About</a>
+      <a href="mailto:tahreemus@icloud.com" class="btn btn--solid btn--pill">Contact</a>
+    </nav>
+  </header>
+
+  <main class="container">
+
+    <section class="hero" id="about">
+      <div class="hero__text">
+        <span class="hero__eyebrow">Data Scientist &middot; Analytics &amp; ML</span>
+        <h1 class="hero__title">I turn data into decisions people act on.</h1>
+        <p class="hero__sub">From NYC heat-equity policy to SaaS churn models — I build the analysis, the pipeline underneath it, and the write-up that makes the case.</p>
+        <div class="hero__actions">
+          <a href="#work" class="btn btn--solid">View Projects</a>
+          <a href="mailto:tahreemus@icloud.com" class="btn btn--outline">Get in Touch</a>
+        </div>
+        <div class="legend">
+          <div class="legend__item"><span class="legend__dot" style="background:var(--teal-dark)"></span>Languages &amp; Core</div>
+          <div class="legend__item"><span class="legend__dot" style="background:var(--coral)"></span>Modeling &amp; Stats</div>
+          <div class="legend__item"><span class="legend__dot" style="background:var(--teal-light)"></span>Applied Analysis</div>
+          <div class="legend__item"><span class="legend__dot" style="background:var(--coral-light)"></span>Engineering &amp; Viz</div>
+        </div>
+      </div>
+
+      <div class="chart-wrap" id="chart-wrap">
+        <svg id="skills-chart" class="chart-svg" role="img" aria-label="A radial chart of skills, grouped by category. Hover or tap a petal for details."></svg>
+        <div id="skill-tooltip" class="skill-tooltip" role="presentation" hidden></div>
+        <div id="skill-detail" class="skill-detail" aria-live="polite" hidden>
+          <span id="skill-category" class="skill-detail__category"></span>
+          <h3 id="skill-name" class="skill-detail__name"></h3>
+          <p id="skill-desc" class="skill-detail__desc"></p>
+        </div>
+        <div id="skill-detail-default" class="skill-detail">
+          <p class="skill-detail__default">Hover or tap a petal to see how I&rsquo;ve actually used it.</p>
+          <p class="skill-detail__note">Band depth is illustrative — first used &rarr; regular use &rarr; core toolkit — not a measured score.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="work" id="work">
+      <span class="section-label">Selected Work</span>
+      <div id="project-grid" class="project-grid"></div>
+    </section>
+
+    <section class="cta">
+      <div>
+        <div class="cta__title">Let&rsquo;s talk data.</div>
+        <div class="cta__sub">Open to analyst / data science roles and project collaborations.</div>
+      </div>
+      <a href="mailto:tahreemus@icloud.com" class="btn btn--solid">Email me</a>
+    </section>
+
+  </main>
+
+  <footer class="container site-footer">
+    <span>&copy; <span id="year"></span> Tahreem Ashraf</span>
+    <div class="footer-links">
+      <a href="https://github.com/tashraf-745" target="_blank" rel="noopener">GitHub</a>
+      <a href="mailto:tahreemus@icloud.com">Email</a>
+    </div>
+  </footer>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/chart.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+</body>
+</html>
