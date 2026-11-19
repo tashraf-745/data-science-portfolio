@@ -40,9 +40,17 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
+/* body intentionally has no background color: as a normal (non-positioned)
+   box, its own background would paint AFTER — on top of — any z-index:-1
+   descendant anywhere in the page, hiding the ambient background underneath
+   it. The browser's default white canvas already matches --bg, and every
+   opaque surface (cards, panels, nav button) sets its own background
+   explicitly where it actually needs to cover the ambient layer.
+   overflow-x:hidden contains the ambient background, which is deliberately
+   wider than the viewport, without clipping normal page content. */
 body {
   margin: 0;
-  background: var(--bg);
+  overflow-x: hidden;
   color: var(--ink);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
@@ -52,6 +60,31 @@ p { margin: 0; }
 a { color: var(--accent); }
 img, svg { max-width: 100%; display: block; }
 .container { width: 100%; max-width: var(--container); margin: 0 auto; padding: 0 24px; }
+
+/* Quiet ambient backdrop, anchored to the chart's own center (not the
+   viewport) so the two radiating motifs always stay concentric regardless
+   of how tall the text above the chart is, or where the page is scrolled.
+   It scrolls with the page rather than staying fixed — a deliberate
+   trade-off for guaranteed alignment with the chart. Never intercepts
+   clicks, and never affects text contrast since every opaque surface on
+   the page (cards, panels, buttons) sets its own background explicitly. */
+.ambient-bg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(1400px, 140vw);
+  height: min(1400px, 140vw);
+  opacity: 0.14;
+  pointer-events: none;
+  z-index: -1;
+}
+/* On narrow viewports the burst is oversized relative to the stacked
+   content and mostly gets cropped by the viewport edges anyway, so it's
+   simplest to just hide it there rather than rescale per breakpoint. */
+@media (max-width: 640px) {
+  .ambient-bg { display: none; }
+}
 
 @media (min-width: 900px) {
   .container { padding: 0 56px; }
@@ -118,19 +151,23 @@ img, svg { max-width: 100%; display: block; }
 .chip-row { display: flex; flex-wrap: wrap; gap: 6px; }
 
 /* ---------- hero ---------- */
+/* Centered, stacked layout: the chart sits dead-center on the page so its
+   hub lines up with the ambient background's own center (and its blank
+   inner ring) — the two radiating motifs read as one continuous idea. */
 .hero {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   align-items: center;
-  gap: 40px;
+  gap: 32px;
   padding: 36px 0 48px;
+  text-align: center;
 }
-.hero__text {
-  flex: 1 1 380px;
-  min-width: 0;
+.hero__intro {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 18px;
+  max-width: 760px;
 }
 .hero__eyebrow {
   font-size: 13px;
@@ -141,20 +178,51 @@ img, svg { max-width: 100%; display: block; }
 }
 .hero__title {
   font-weight: 700;
-  font-size: clamp(32px, 4.4vw, 46px);
-  line-height: 1.14;
+  font-size: clamp(32px, 5vw, 52px);
+  line-height: 1.12;
+}
+
+/* Hero headline entrance: letters scatter in from random positions, then
+   the accent sweeps through each clause on a loop. transition lives only
+   on .assembled (not the base .hero-char rule), so removing that class
+   snaps instantly back to scattered rather than animating in reverse —
+   otherwise a restart re-added moments later never visibly gets anywhere. */
+.hero-assemble { display: block; }
+.hero-seg {
+  display: block;
+  transition: color 0.5s ease;
+}
+.hero-seg--active { color: var(--accent); }
+/* keeps a word's letters glued together as one wrap-atomic unit, so a
+   sentence that has to wrap on a narrow screen breaks between words, not
+   mid-word — individual letters have no inherent "word" grouping on their
+   own once each is its own inline-block for the fly-in effect. */
+.hero-word { display: inline-block; white-space: nowrap; }
+.hero-char {
+  display: inline-block;
+  opacity: 0;
+  transform: translate(var(--dx, 0), var(--dy, 0)) rotate(var(--rot, 0deg));
+}
+.hero-assemble.assembled .hero-char {
+  opacity: 1;
+  transform: translate(0, 0) rotate(0deg);
+  transition: transform 0.9s cubic-bezier(.17,.84,.44,1), opacity 0.5s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-char { transition: none !important; opacity: 1 !important; transform: none !important; }
 }
 .hero__sub {
-  font-size: 16px;
+  font-size: 17px;
   line-height: 1.6;
   color: var(--ink-muted);
-  max-width: 440px;
+  max-width: 600px;
 }
-.hero__actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 4px; }
+.hero__actions { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin-top: 4px; }
 
 .legend {
-  display: grid;
-  grid-template-columns: repeat(2, auto);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 10px 24px;
   margin-top: 10px;
 }
@@ -164,8 +232,7 @@ img, svg { max-width: 100%; display: block; }
 /* ---------- skills chart ---------- */
 .chart-wrap {
   position: relative;
-  flex: 1 1 620px;
-  min-width: 0;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -195,7 +262,7 @@ img, svg { max-width: 100%; display: block; }
 }
 .chart-svg {
   width: 100%;
-  max-width: 880px;
+  max-width: 680px;
   height: auto;
 }
 .petal { cursor: pointer; outline: none; filter: drop-shadow(0 6px 12px rgba(17,35,42,.2)); transition: filter .15s ease; }
@@ -205,9 +272,9 @@ img, svg { max-width: 100%; display: block; }
 .petal:hover .petal-ring, .petal:focus-visible .petal-ring, .petal.is-active .petal-ring { opacity: 1; }
 .petal-label {
   font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 600;
-  fill: var(--ink-muted);
+  font-size: 20px;
+  font-weight: 700;
+  fill: var(--ink);
   pointer-events: none;
 }
 .chart-hub { fill: var(--ink); stroke: #FFFFFF; stroke-width: 5; }

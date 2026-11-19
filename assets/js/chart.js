@@ -5,7 +5,16 @@
      petal crosses, so the checker pattern lines up across the whole chart
    - a subtle turbulence-noise filter adds paper grain over the whole chart
    Label text is counter-rotated by the negative of the petal's own rotation
-   so it stays upright regardless of position (see buildSkillsChart below). */
+   so it stays upright at its initial position (see buildSkillsChart below).
+
+   The whole wheel also turns continuously (SMIL <animateTransform> on a
+   wrapping <g>, so it animates the real "transform" attribute rather than
+   fighting each petal's own static rotate() with a CSS transform). Labels
+   aren't counter-spun against that rotation — they're rigidly part of the
+   wheel, so they move with their petal exactly like the petal shape does.
+   The whole thing pauses on hover/focus via the SVG's native
+   pauseAnimations()/unpauseAnimations(), so a hovered petal and its tooltip
+   hold still instead of chasing a moving target. */
 function buildSkillsChart() {
   const svg = document.getElementById('skills-chart');
   if (!svg) return;
@@ -21,14 +30,32 @@ function buildSkillsChart() {
   const size = 1120; // wide enough that even the longest label ("Statistical Modeling") clears the edge
   const cx = size / 2;
   const cy = size / 2;
-  const petalWidth = 40;
+  // Wider than the original 40: the rendered chart is deliberately small
+  // (so it fits a normal viewport height alongside the hero text), and a
+  // thin petal at that render size is hard to hit precisely — its rotated
+  // shape is so narrow that even its own bounding-box center can fall
+  // outside the actual geometry. Width is independent of petal length, so
+  // this doesn't change the chart's overall diameter, just how comfortable
+  // each petal is to hover/tap.
+  //
+  // 48, not wider: a sweep > 360deg doesn't produce one clean seam gap —
+  // because the wrapped petal (index 11) lands at a normalized angle less
+  // than index 1's, it's sandwiched between two *different* early petals,
+  // producing two tight gaps (~17deg each here) rather than a single large
+  // one. Both of those gaps involve the chart's shortest petal (length 225),
+  // which sets the binding radius for collision. 48 is the widest petal
+  // that still clears both tight gaps with margin at that radius; wider
+  // reintroduces the hover-interception bug this was built to fix.
+  const petalWidth = 48;
   const slotPad = 6;       // slot is wider than the petal on each side
   const slotTipExtend = 8; // slot reaches a little past the petal's tip
   const ringWidth = 48;    // shared concentric ring thickness (the checker rhythm)
   const startAngle = -15;
-  const totalSweep = 384;  // > 360 so the spiral coils past its own start, ~24deg seam gap
+  const totalSweep = 377;  // > 360 so the spiral coils past its own start
   const step = totalSweep / (SKILLS.length - 1);
   const labelGap = 18;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const spinDur = '70s'; // slow, ambient: ~1 full turn a minute and change
 
   const defs = `
     <defs>
@@ -121,11 +148,19 @@ function buildSkillsChart() {
       </g>`;
   }).join('');
 
+  // The wheel (petals + labels) turns as one rigid body via a native SMIL
+  // animation on its own "transform" attribute, so it composes correctly
+  // with each petal's static rotate() instead of a CSS transform clobbering
+  // it. Kept off the hub, which is rotationally symmetric anyway.
+  const wheelSpin = reduced ? '' : `<animateTransform attributeName="transform" type="rotate"
+      from="0 ${cx} ${cy}" to="360 ${cx} ${cy}" dur="${spinDur}" repeatCount="indefinite"></animateTransform>`;
+  const wheel = `<g id="chart-wheel">${wheelSpin}${petalsMarkup}</g>`;
+
   const hub = `<circle class="chart-hub" cx="${cx}" cy="${cy}" r="30"></circle>`;
   const grainOverlay = `<rect class="chart-grain" x="0" y="0" width="${size}" height="${size}" filter="url(#grain)"></rect>`;
 
   svg.setAttribute('viewBox', `0 0 ${size} ${size}`);
-  svg.innerHTML = defs + petalsMarkup + hub + grainOverlay;
+  svg.innerHTML = defs + wheel + hub + grainOverlay;
 
   const petals = Array.from(svg.querySelectorAll('.petal'));
   let pinnedIndex = null;
@@ -196,6 +231,21 @@ function buildSkillsChart() {
   window.addEventListener('resize', () => {
     if (pinnedIndex !== null && !tooltip.hidden) showTooltip(pinnedIndex);
   });
+
+  /* The chart keeps spinning until something is actually being hovered or
+     focused, then freezes in place (pauseAnimations() stops every SMIL
+     animation in this SVG in one call) so a petal and its tooltip hold
+     still instead of chasing a moving target. Scoped to the whole SVG, not
+     per-petal, so moving between adjacent petals doesn't flicker pause/
+     resume on every boundary crossing. */
+  if (!reduced) {
+    svg.addEventListener('mouseenter', () => svg.pauseAnimations());
+    svg.addEventListener('mouseleave', () => svg.unpauseAnimations());
+    svg.addEventListener('focusin', () => svg.pauseAnimations());
+    svg.addEventListener('focusout', (e) => {
+      if (!svg.contains(e.relatedTarget)) svg.unpauseAnimations();
+    });
+  }
 }
 
 document.addEventListener('DOMContentLoaded', buildSkillsChart);
